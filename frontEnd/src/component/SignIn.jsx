@@ -6,6 +6,7 @@ import { ServerUrl } from "../utils/constant";
 const SignIn = () => {
   const [isSignIn, setIsSignIn] = useState(false);
   const [previewImg, setPrevImg] = useState(null);
+  const [imgUrl,setimgUrl]=useState(' ')
   const [error, setError] = useState(" ");
   const phtoInp = useRef(null);
   const emailRef = useRef(null);
@@ -25,14 +26,17 @@ const SignIn = () => {
 
       if (error === null) {
         axios
-          .post(ServerUrl + "/user-signin", {
+          .post(ServerUrl+"/user-signin", {
             userName: name,
             email: email,
             password: password1,
+            
           })
           .then((res) => {})
           .catch((e) => {
-            setError(e);
+            if (e.response) {
+              setError(e.response.data.error)
+            }
           });
       } else {
         setError(valid);
@@ -46,10 +50,14 @@ const SignIn = () => {
             UserName: name,
             email: email,
             password: password1,
+            profileImage:imgUrl,
           })
           .then((res) => {})
-          .catch((err) => {
-            setError(err);
+          .catch((e) => {
+          if(e.response){
+            setError(e.response.data.error)
+          }
+          
           });
       } else {
         errorTost(valid);
@@ -61,6 +69,22 @@ const SignIn = () => {
   const handilImage = () => {
     const img = phtoInp.current.files[0];
     setPrevImg(URL.createObjectURL(img));
+   if(img) { 
+         const formData= new FormData()
+         formData.append('photo',img)
+
+    axios.post(ServerUrl+'/user-profile-img',formData,{
+        headers:{'Content-Type':'multipart/form-data'}
+    }).then((res)=>{
+       console.log(res.data.path);
+       setimgUrl(res.data.path)
+       alert('done')
+    }).catch((e)=>{
+        setError(e)
+        console.log(e);
+        
+    });
+}
   };
   return (
     <div className="h-screen w-screen  bg-slate-800 pt-[2%]">
@@ -69,7 +93,7 @@ const SignIn = () => {
           <h1 className="font-bold  text-center   text text-3xl mt-3">
             {isSignIn ? "Sign In" : "Sign Up"}
           </h1>
-
+           <p>{imgUrl}</p>
           <form action="" onSubmit={handileSumbit}>
             {!isSignIn && (
               <div className="w-24 h-24 rounded-full mt-5 mx-auto flex  bg-slate-600 ">
@@ -85,8 +109,7 @@ const SignIn = () => {
                     <img
                       src={previewImg}
                       className="object-cover rounded-full   w-24 h-24  "
-                      onMouseEnter={() => setDeleteIcon(true)}
-                      onMouseLeave={() => setDeleteIcon(false)}
+                     
                       alt=""
                     />
                   </div>
@@ -152,9 +175,12 @@ const SignIn = () => {
             </button>
           </form>
         </div>
-      </div>
+      </div>  
     </div>
+   
   );
 };
+
+
 
 export default SignIn;
