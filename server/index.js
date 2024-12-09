@@ -1,15 +1,19 @@
 import express from 'express'
 import cors from 'cors'
-const app=express()
+import userRoute from './routers/userRouter.js'
+import bodyParser from 'body-parser'
 
-app.listen(3000,()=>{
-    console.log("http://localhost:3000/");
-     
-})
-
+const app = express()
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(express.json())
+app.use('/', userRoute)
 
-app.get('/sample',(req,res)=>{
-    res.send('sample data.huhihsduihf')
+
+
+
+
+app.listen(3000, () => {
+    console.log("http://localhost:3000/");
+
 })
-

@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const Sample = () => {
-  return (
-    <div className='dark'>
-      
-    </div>
-  )
-}
+  return <div className="dark"></div>;
+};
 
-export default Sample
+export default Sample;
