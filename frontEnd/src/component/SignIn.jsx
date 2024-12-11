@@ -32,7 +32,12 @@ const SignIn = () => {
             password: password1,
             
           })
-          .then((res) => {})
+          .then((res) => {
+            // console.log(res.data?.token);
+            localStorage.setItem('token',res.data?.token)
+            console.log('Stored token:', localStorage.getItem('token'));
+            window.location.reload()
+          })
           .catch((e) => {
             if (e.response) {
               setError(e.response.data.error)
@@ -88,7 +93,7 @@ const SignIn = () => {
   };
   return (
     <div className="h-screen w-screen  bg-slate-800 pt-[2%]">
-      <div className="dark">
+    
         <div className=" mx-auto w-[600px] h-[650px] backdrop:blur-3xl shadow-[0_0_0_0.25px_white] rounded-t-md  bg-slate-800 p-10 pt-4 text-white ">
           <h1 className="font-bold  text-center   text text-3xl mt-3">
             {isSignIn ? "Sign In" : "Sign Up"}
@@ -176,7 +181,7 @@ const SignIn = () => {
           </form>
         </div>
       </div>  
-    </div>
+   
    
   );
 };

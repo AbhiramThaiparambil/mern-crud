@@ -1,7 +1,11 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter,Navigate } from "react-router-dom";
 import SignIn from "./component/SignIn";
+import Home from "./component/Home";
+import AdminSignIn from "./component/Admin/SignIn"
+import DashBoard from "./component/Admin/DashBoard";
 
 function App() {
+  
   return (
     <>
       <h1>hello</h1>
@@ -10,10 +14,29 @@ function App() {
   );
 }
 
+const checkAuth = () => {
+ return localStorage.getItem('token') !== null ? true:false
+};
+const checkIsAdmin=()=>{
+  
+  return localStorage.getItem("adminToken")
+}
 const appRoute = createBrowserRouter([
   {
     path: "/",
-    element: <SignIn />,
+    element: checkAuth() ? <Navigate to="/home" /> : <SignIn />,
+  },
+  {
+    path: "/home",
+    element: checkAuth()? <Home /> : <Navigate to="/" />,
+  },
+  {
+    path: "/admin",
+    element:  checkIsAdmin() ? <Navigate to="/admin-dashboard" /> : <AdminSignIn />,
+  },
+  {
+    path: "/admin-dashboard",
+    element: checkIsAdmin() ? <DashBoard /> : <Navigate to="/admin" />,
   },
 ]);
 export default appRoute;
