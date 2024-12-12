@@ -2,31 +2,50 @@ import React, { useState, useRef } from "react";
 import validation from "../../utils/validation";
 import axios from "axios";
 import { ServerUrl } from "../../utils/constant";
-const SignIn = () => {
-  const [error, setError] = useState(" uuih ");
+import { ToastContainer, toast,Bounce } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
 
-  const emailRef = useRef(null);
+const SignIn = () => {
+  const [error, setError] = useState("");
+  const emailRef = useRef(' ');
   const passwordRef = useRef(null);
 
-  const handileSumbit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const email = emailRef?.current?.value;
-    const password = passwordRef?.current?.value;
-   
-    const valid = validation( null,email, password,null,false);
+    const email = emailRef.current?.value; // Added optional chaining
+    const password = passwordRef.current?.value; // Added optional chaining
 
-    if (error === null) {
-        alert('done')
+    const valid = validation(null, email, password, null, false);
+
+    if (valid===null) {
+      setError(" "); 
+
       axios
-        .post(ServerUrl +"/admin-signin", {
+        .post(`${ServerUrl}/admin-signin`, {
           email: email,
           password: password,
         })
-        .then((res) => {})
-        .catch((e) => {
-          if (e.response) {
-            setError(e.response.data.error);
-          }
+        .then((res) => {
+          console.log(res);
+            localStorage.setItem('adminToken',res?.data?.adminToken)
+            
+            window.location.reload()
+            
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.warn(error?.response?.data?.message, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+            transition: Bounce,
+            });
+            setError(error?.response?.data?.message); 
         });
     } else {
       setError(valid);
@@ -35,10 +54,10 @@ const SignIn = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="w-full max-w-lg bg-white shadow-md  rounded-lg p-8">
+      <div className="w-full max-w-lg bg-white shadow-md rounded-lg p-8">
         <h2 className="text-2xl font-bold text-center mb-6">Admin Login</h2>
 
-        <form onSubmit={(e)=>handileSumbit(e)}>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
               htmlFor="email"
@@ -67,11 +86,12 @@ const SignIn = () => {
               id="password"
               ref={passwordRef}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
+               autoComplete="on"
               placeholder="Enter your password"
             />
           </div>
 
-          {error && <p className="text-red-500 text-xs italic mb-4">{error}</p>}
+          {error && <p className="text-red-500  text-md font-bold  mb-4">{error}</p>}
 
           <div className="flex items-center justify-between">
             <button
@@ -80,6 +100,8 @@ const SignIn = () => {
             >
               Sign In
             </button>
+            <ToastContainer />
+
           </div>
         </form>
       </div>

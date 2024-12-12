@@ -47,7 +47,6 @@ export const userSignIn = async (req, res) => {
          const match = await compare(password, user.password)
          if (match) {
 
-            console.log("..............................");
 
             const token = await jsonwebtoken.sign({ token: user._id }, 'mysecret')
 
@@ -88,16 +87,57 @@ export const userHome = async (req, res) => {
    }
 }
 
+
+
 export const editProfile = async (req, res) => {
    try {
-      console.log('--------------------');
+      const { editEmail, editUserName, profileImage, token } = req.body;
 
-      const { editEmail, editUserName, token } = req.body;
+      if (token) {
+         const tokenVerified = jsonwebtoken.verify(token, 'mysecret');
+         const userId = tokenVerified.token;
 
-      console.log(editEmail,editUserName, token);
+         console.log(userId);
+
+
+         if (userId) {
+            let updateData = {
+               userName: editUserName,
+               email: editEmail,
+            };
+
+            if (profileImage) {
+               updateData.profileImage = profileImage;
+            }
+
+            const isUpdated = await User.updateOne({ _id: userId }, { $set: updateData });
+
+            if (isUpdated) {
+               const updatedData = await User.findOne({ _id: userId });
+
+               return res.status(201).json({ message: "User profile updated successfully", updatedData: updatedData });
+            } else {
+               return res.status(400).json({ message: "No changes made to the profile" });
+            }
+         } else {
+            return res.status(400).json({ message: "Invalid token" });
+         }
+      } else {
+         return res.status(400).json({ message: "Token is required" });
+      }
+   } catch (error) {
+      console.log("Error updating profile:", error);
+      res.status(500).json({ message: "An error occurred while updating the profile" });
+   }
+};
+
+
+export const adminUserEdit = async (req, res) => {
+   try {
 
 
    } catch (error) {
+      console.log(error);
 
    }
 }

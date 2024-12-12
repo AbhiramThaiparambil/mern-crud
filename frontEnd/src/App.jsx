@@ -1,6 +1,6 @@
 import { createBrowserRouter,Navigate } from "react-router-dom";
-import SignIn from "./component/SignIn";
-import Home from "./component/Home";
+import SignIn from "./component/User/SignIn";
+import Home from "./component/User/Home";
 import AdminSignIn from "./component/Admin/SignIn"
 import DashBoard from "./component/Admin/DashBoard";
 

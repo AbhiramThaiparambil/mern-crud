@@ -7,8 +7,6 @@ import "./index.css";
 import appRoute from "./App";
 createRoot(document.getElementById("root")).render(
   <Provider store={appStore}>
-  <StrictMode>
     <RouterProvider router={appRoute}></RouterProvider>
-  </StrictMode>
   </Provider>
 );
